@@ -14,6 +14,8 @@ type userDao struct{}
 
 var UserDao = new(userDao)
 
+//TODO: 全部使用redis存储，uid->internal_id, phone->internal_id, internal_id->user_info
+
 // Add 插入一条用户信息
 func (*userDao) Add(user model.User) (int64, error) {
 	user.CreateTime = time.Now()
@@ -70,7 +72,7 @@ func (*userDao) GetByIds(userIds []int64) ([]model.User, error) {
 	return users, err
 }
 
-// Search 查询用户,这里简单实现，生产环境建议使用ES
+// Search 查询用户,TODO:使用ES
 func (*userDao) Search(key string) ([]model.User, error) {
 	var users []model.User
 	key = "%" + key + "%"

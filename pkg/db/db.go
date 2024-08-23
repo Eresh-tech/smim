@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"gim/config"
 	"gim/pkg/logger"
 	"gim/pkg/util"
@@ -51,12 +50,4 @@ func InitRedis(addr, password string) {
 
 	RedisUtil = util.NewRedisUtil(RedisCli)
 	logger.Logger.Info("init redis ok")
-}
-
-// InitByTest 初始化数据库配置，仅用在单元测试
-func InitByTest() {
-	fmt.Println("init db")
-	logger.Target = logger.Console
-	//InitMysql(config.MySQL)
-	//InitRedis(config.RedisIP, config.RedisPassword)
 }
