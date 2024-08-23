@@ -5,15 +5,8 @@ import (
 	"gim/internal/business/domain/user/model"
 	"gim/pkg/db"
 	"gim/pkg/gerrors"
-	"strconv"
-	"time"
-
 	"github.com/go-redis/redis"
-)
-
-const (
-	UserKey    = "user:"
-	UserExpire = 2 * time.Hour
+	"strconv"
 )
 
 type userCache struct{}

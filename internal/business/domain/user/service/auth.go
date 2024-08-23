@@ -27,10 +27,11 @@ func (*authService) SignIn(ctx context.Context, phoneNumber, code string, device
 
 	var isNew = false
 	if user == nil {
+		t := time.Now()
 		user = &model.User{
 			PhoneNumber: phoneNumber,
-			CreateTime:  time.Now(),
-			UpdateTime:  time.Now(),
+			CreateTime:  t,
+			UpdateTime:  t,
 		}
 		err := repo.UserRepo.Save(user)
 		if err != nil {
