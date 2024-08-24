@@ -181,6 +181,13 @@ func (c *Conn) SignIn(input *pb.Input) {
 
 	c.Send(pb.PackageType_PT_SIGN_IN, input.RequestId, nil, err)
 	if err != nil {
+		logger.Sugar.Error(err)
+		//登录失败时应当立刻关闭连接，只有登录成功后才应当建立长连接
+		if c.CoonType == CoonTypeTCP {
+			c.TCP.Close()
+		} else if c.CoonType == ConnTypeWS {
+			err = c.WS.Close()
+		}
 		return
 	}
 
