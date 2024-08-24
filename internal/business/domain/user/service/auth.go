@@ -2,17 +2,33 @@ package service
 
 import (
 	"context"
+	"crypto/md5"
+	"fmt"
 	"gim/internal/business/domain/user/model"
 	"gim/internal/business/domain/user/repo"
 	"gim/pkg/gerrors"
 	"gim/pkg/protocol/pb"
 	"gim/pkg/rpc"
+	"io"
 	"time"
 )
 
 type authService struct{}
 
 var AuthService = new(authService)
+
+const salt = "token"
+
+func genToken(str string) (string, error) {
+	h := md5.New()
+	_, err := io.WriteString(h, str)
+	if err != nil {
+		return "", err
+	}
+
+	token := h.Sum(nil)
+	return string(token), nil
+}
 
 // SignIn 登录
 func (*authService) SignIn(ctx context.Context, phoneNumber, code string, deviceId int64) (bool, int64, string, error) {
@@ -44,9 +60,10 @@ func (*authService) SignIn(ctx context.Context, phoneNumber, code string, device
 		return false, 0, "", err
 	}
 
-	// 方便测试
-	token := "0"
-	//token := util.RandString(40)
+	token, err := genToken(fmt.Sprintf("%s,%d", salt, user.Id))
+	if err != nil {
+		token = "" //invalid token
+	}
 	err = repo.AuthRepo.Set(user.Id, resp.Device.DeviceId, model.Device{
 		Type:   resp.Device.Type,
 		Token:  token,
@@ -59,8 +76,11 @@ func (*authService) SignIn(ctx context.Context, phoneNumber, code string, device
 	return isNew, user.Id, token, nil
 }
 
+// Verify 模拟验证码
 func Verify(phoneNumber, code string) bool {
-	// 假装他成功了
+	if phoneNumber == "" || code == "" {
+		return false
+	}
 	return true
 }
 
